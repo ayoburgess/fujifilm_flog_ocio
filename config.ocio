@@ -1,0 +1,61 @@
+ocio_profile_version: 1
+
+search_path: luts:mtx
+strictparsing: true
+luma: [0.2126, 0.7152, 0.0722]
+
+roles:
+  color_picking: ncd
+  color_timing: flog
+  compositing_log: flog
+  data: ncd
+  default: ncd
+  matte_paint: flog
+  reference: aces
+  scene_linear: aces
+  texture_paint: flog
+
+displays:
+  default:
+    - !<View> {name: F-Log, colorspace: flog}
+    - !<View> {name: No LUT, colorspace: ncd}
+
+active_displays: [default]
+active_views: [No LUT, F-Log]
+
+colorspaces:
+  - !<ColorSpace>
+    name: aces
+    family: ACES
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The Academy Color Encoding System reference color space (ACES 2065-1)
+    isdata: false
+    allocation: lg2
+    allocationvars: [-8, 5, 0.00390625]
+
+  - !<ColorSpace>
+    name: flog
+    family: Fujifilm
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      Fujifilm F-Log color space
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: flog_to_linear.cube, interpolation: linear}
+        - !<FileTransform> {src: rec2020_to_ap0.cat02.spimtx, interpolation: unknown}
+
+  - !<ColorSpace>
+    name: ncd
+    family: Data
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      Non-color data
+    isdata: true
+    allocation: uniform
